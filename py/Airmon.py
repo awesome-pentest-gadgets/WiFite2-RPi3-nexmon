@@ -76,7 +76,7 @@ class Airmon(object):
 
         # Call airmon-ng
         Color.p("{+} enabling {G}monitor mode{W} on {C}%s{W}... " % iface)
-        (out,err) = Process.call('airmon-ng start %s' % iface)
+        (out,err) = Process.call('nexutil -m2')
 
         # Find the interface put into monitor mode (if any)
         mon_iface = None
@@ -96,9 +96,9 @@ class Airmon(object):
         mon_ifaces = Airmon.get_interfaces_in_monitor_mode()
 
         # Assert that there is an interface in monitor mode
-        if len(mon_ifaces) == 0:
-            Color.pl("{R}failed{W}")
-            raise Exception("iwconfig does not see any interfaces in Mode:Monitor")
+        #if len(mon_ifaces) == 0:
+        #    Color.pl("{R}failed{W}")
+        #    raise Exception("iwconfig does not see any interfaces in Mode:Monitor")
 
         # Assert that the interface enabled by airmon-ng is in monitor mode
         if mon_iface not in mon_ifaces:
@@ -116,7 +116,7 @@ class Airmon(object):
     @staticmethod
     def stop(iface):
         Color.p("{!} {R}disabling {O}monitor mode{O} on {R}%s{O}... " % iface)
-        (out,err) = Process.call('airmon-ng stop %s' % iface)
+        (out,err) = Process.call('nexutil -m0')
         mon_iface = None
         for line in out.split('\n'):
             # aircrack-ng 1.2 rc2
