@@ -76,41 +76,23 @@ class Airmon(object):
 
         # Call airmon-ng
         Color.p("{+} enabling {G}monitor mode{W} on {C}%s{W}... " % iface)
-        (out,err) = Process.call('nexutil -m2')
+        (out,err) = Process.call('nexutil -m2'))
 
-        # Find the interface put into monitor mode (if any)
-        mon_iface = None
-        for line in out.split('\n'):
-            if 'monitor mode' in line and 'enabled' in line and ' on ' in line:
-                mon_iface = line.split(' on ')[1]
-                if ']' in mon_iface:
-                    mon_iface = mon_iface.split(']')[1]
-                if ')' in mon_iface:
-                    mon_iface = mon_iface.split(')')[0]
-                break
-
-        if mon_iface == None:
-            # Airmon did not enable monitor mode on an interface
-            Color.pl("{R}failed{W}")
-
-        mon_ifaces = Airmon.get_interfaces_in_monitor_mode()
+        (out,err) = Process.call('nexutil -m')
+        nexutil_monitor_mode = out.split()[1]
 
         # Assert that there is an interface in monitor mode
-        #if len(mon_ifaces) == 0:
-        #    Color.pl("{R}failed{W}")
-        #    raise Exception("iwconfig does not see any interfaces in Mode:Monitor")
-
-        # Assert that the interface enabled by airmon-ng is in monitor mode
-        if mon_iface not in mon_ifaces:
+        if nexutil_monitor_mode == 0:
             Color.pl("{R}failed{W}")
-            raise Exception("iwconfig does not see %s in Mode:Monitor" % mon_iface)
+            raise Exception("nexutil does not see any interfaces in Mode:Monitor")
+
 
         # No errors found; the device 'mon_iface' was put into MM.
-        Color.pl("{G}enabled {C}%s{W}" % mon_iface)
+        Color.pl("{G}enabled {C}%s{W}" % iface)
 
-        Configuration.interface = mon_iface
+        Configuration.interface = iface
 
-        return mon_iface
+        return iface
 
 
     @staticmethod
