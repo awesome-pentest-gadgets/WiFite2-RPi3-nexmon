@@ -1,3 +1,6 @@
+```diff
+- This patched to be used with nexmon on a RPi3
+```
 Wifite 2
 ========
 A complete re-write of [`wifite`](https://github.com/derv82/wifite), a Python script for auditing wireless networks.
