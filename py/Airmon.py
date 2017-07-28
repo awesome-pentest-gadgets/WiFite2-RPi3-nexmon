@@ -76,7 +76,7 @@ class Airmon(object):
 
         # Call airmon-ng
         Color.p("{+} enabling {G}monitor mode{W} on {C}%s{W}... " % iface)
-        (out,err) = Process.call('nexutil -m2'))
+        (out,err) = Process.call('nexutil -m2')
 
         (out,err) = Process.call('nexutil -m')
         nexutil_monitor_mode = out.split()[1]
@@ -99,25 +99,12 @@ class Airmon(object):
     def stop(iface):
         Color.p("{!} {R}disabling {O}monitor mode{O} on {R}%s{O}... " % iface)
         (out,err) = Process.call('nexutil -m0')
-        mon_iface = None
-        for line in out.split('\n'):
-            # aircrack-ng 1.2 rc2
-            if 'monitor mode' in line and 'disabled' in line and ' for ' in line:
-                mon_iface = line.split(' for ')[1]
-                if ']' in mon_iface:
-                    mon_iface = mon_iface.split(']')[1]
-                if ')' in mon_iface:
-                    mon_iface = mon_iface.split(')')[0]
-                break
+        (out,err) = Process.call('nexutil -m')
+        nexutil_monitor_mode = out.split()[1]
 
-            # aircrack-ng 1.2 rc1
-            match = re.search('([a-zA-Z0-9]+).*\(removed\)', line)
-            if match:
-                mon_iface = match.groups()[0]
-                break
-
-        if mon_iface:
-            Color.pl('{R}disabled %s{W}' % mon_iface)
+        # Assert that there is an interface in monitor mode
+        if nexutil_monitor_mode != 0:
+            Color.pl('{R}disabled %s{W}' % iface)
         else:
             Color.pl('{O}could not disable on {R}%s{W}' % iface)
 
